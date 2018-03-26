@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="user">
+
+	<select id="getByEmailAndPassword" parameterType="uservo" resultType="uservo">
+	<![CDATA[
+	SELECT NO, NAME 
+		FROM USER 
+		WHERE EMAIL=#{email} 
+		AND PASSWORD= PASSWORD(#{password})
+		]]>
+	</select>
+	
+	<select id="getByNo" parameterType="long" resultType="uservo">
+	<![CDATA[
+	SELECT NO, EMAIL, GENDER, NAME 
+		FROM USER 
+		WHERE NO=#{no} 
+		]]>
+	</select>
+
+	<select id="getByEmail" parameterType="string" resultType="uservo">
+	<![CDATA[
+	SELECT NO, EMAIL, GENDER, NAME 
+		FROM USER 
+		WHERE EMAIL=#{email} 
+		]]>
+	</select>
+	
+	<insert id="insert" parameterType="uservo">
+	<![CDATA[
+		INSERT INTO USER 
+		VALUES(NULL, #{name}, #{email}, PASSWORD(#{password}), #{gender}, now()) 
+	]]>
+	</insert>
+	
+	<update id="update" parameterType="uservo">
+	<![CDATA[
+	UPDATE USER 
+		SET NAME = ${name},  
+		]]>   
+		<if test='password != ""'>
+		PASSWORD = PASSWORD(${password}),  
+		</if>   
+		<![CDATA[
+		GENDER = ${gender} 
+		WHERE NO = ${no} 
+	]]>
+	</update>
+
+</mapper>

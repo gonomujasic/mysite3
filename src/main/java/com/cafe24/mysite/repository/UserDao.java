@@ -8,6 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
+import org.apache.ibatis.session.SqlSession;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cafe24.mysite.exception.UserDaoException;
@@ -16,154 +20,41 @@ import com.cafe24.mysite.vo.UserVo;
 @Repository
 public class UserDao {
 	
-	public static Connection getConnection() {
-		Connection conn = null;
-		try {
-			Class.forName("com.mysql.jdbc.Driver");
-
-			String url = "jdbc:mysql://localhost/webdb";
-
-			conn = DriverManager.getConnection(url, "webdb", "webdb");
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		return conn;
-	}
+	@Autowired
+	DataSource dataSource;
+	
+	@Autowired
+	SqlSession sqlSession;
 	
 	public boolean insert( UserVo vo) {
-		boolean result = false;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
+		int count = sqlSession.insert("user.insert", vo);
+		boolean result = count == 1;
 		
-		try {
-			conn = getConnection();
-			String sql = "INSERT INTO USER VALUES(NULL, ?, ?, PASSWORD(?), ?, now()) ";
-			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setString(1, vo.getName());
-			pstmt.setString(2, vo.getEmail());
-			pstmt.setString(3, vo.getPassword());
-			pstmt.setString(4, vo.getGender());
-			
-			int count = pstmt.executeUpdate();
-			
-			result = count == 1;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
 		return result;
 	}
 	
-	public UserVo get(String email, String password) {
+	public UserVo get(UserVo vo) {
 		
-		UserVo result = null;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
-		
-		try {
-			conn = getConnection();
-
-			String sql = "SELECT NO, NAME  "
-					+ "FROM USER "
-					+ "WHERE EMAIL=? "					
-					+ "AND PASSWORD= PASSWORD(?) ";					
-			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setString(1, email);
-			pstmt.setString(2, password);
-			
-			rs = pstmt.executeQuery();
-
-			// 5. 결과 처리
-
-			if(rs.next()) {
-				result = new UserVo();
-				result.setNo(rs.getLong(1));
-				result.setName(rs.getString(2));
-			}
-
-		} catch (SQLException e) {
-			System.out.println("sql 에러" + e);
-		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (rs != null) {
-					rs.close();
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		UserVo result = sqlSession.selectOne("user.getByEmailAndPassword",vo);
 		
 		return result;
 		
 	}
 	public UserVo get(Long no) {
 		
-		UserVo result = null;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		ResultSet rs = null;
+		UserVo result = sqlSession.selectOne("user.getByNo", no);
 		
-		try {
-			conn = getConnection();
-
-			String sql = "SELECT NO, EMAIL, NAME, PASSWORD, GENDER  "
-					+ "FROM USER "
-					+ "WHERE NO=? ";					
-			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setLong(1, no);
-			
-			rs = pstmt.executeQuery();
-
-			// 5. 결과 처리
-
-			if(rs.next()) {
-				result = new UserVo();
-				result.setNo(rs.getLong(1));
-				result.setEmail(rs.getString(2));
-				result.setName(rs.getString(3));
-				result.setPassword(rs.getString(4));
-				result.setGender(rs.getString(5));
-			}
-
-		} catch (SQLException e) {
-			throw new UserDaoException();
-		} finally {
-			try {
-				if (conn != null) {
-					conn.close();
-				}
-				if (pstmt != null) {
-					pstmt.close();
-				}
-				if (rs != null) {
-					rs.close();
-				}
-			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
+		return result;
+		
+	}
+	public UserVo get(String email) {
+		
+		UserVo result = sqlSession.selectOne("duser.getByEmail", email);
+		
 		return result;
 		
 	}
 	
-
 	public List<UserVo> getList() {
 		List<UserVo> list = new ArrayList<>();
 		
@@ -172,7 +63,7 @@ public class UserDao {
 		ResultSet rs = null;
 		
 		try {
-			conn = getConnection();
+			conn = dataSource.getConnection();
 
 			String sql = "SELECT NO, NAME, PASSWORD, CONTENT, DATE_FORMAT(REG_DATE, '%Y-%m-%d') "
 					+ "FROM GUESTBOOK "
@@ -216,32 +107,8 @@ public class UserDao {
 	}
 
 	public boolean modify(UserVo vo) {
-		
-		boolean result = false;
-		Connection conn = null;
-		PreparedStatement pstmt = null;
-		
-		try {
-			conn = getConnection();
-			String sql = "UPDATE USER "
-					+ "SET NAME = ?, "
-					+ "    PASSWORD = PASSWORD(?), "
-					+ "    GENDER = ? "
-					+ "WHERE NO = ? ";
-			pstmt = conn.prepareStatement(sql);
-
-			pstmt.setString(1, vo.getName());
-			pstmt.setString(2, vo.getPassword());
-			pstmt.setString(3, vo.getGender());
-			pstmt.setLong(4, vo.getNo());
-			
-			int count = pstmt.executeUpdate();
-			
-			result = count == 1;
-			
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		int count = sqlSession.update("user.update", vo);
+		boolean result = count == 1;
 		
 		return result;
 		
@@ -253,7 +120,7 @@ public class UserDao {
 		PreparedStatement pstmt = null;
 		
 		try {
-			conn = getConnection();
+			conn = dataSource.getConnection();
 			String sql = "DELETE "
 					+ "FROM GUESTBOOK "
 					+ "WHERE NO = ? "

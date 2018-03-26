@@ -1,5 +1,8 @@
 package com.cafe24.mysite.vo;
 
+import org.apache.ibatis.type.Alias;
+
+@Alias("pager")
 public class Pager {
 
 	private Integer totalNo;
@@ -10,6 +13,8 @@ public class Pager {
 	private Integer maxPage;
 	private Integer startPage;
 	private Integer endPage;
+	
+	private Integer pageNo;
 	
 	private String keyword;
 
@@ -53,6 +58,14 @@ public class Pager {
 
 	public Integer getPAGE_PER_ORDER() {
 		return PAGE_PER_ORDER;
+	}
+
+	public Integer getPageNo() {
+		return pageNo;
+	}
+
+	public void setPageNo(Integer pageNo) {
+		this.pageNo = pageNo;
 	}
 
 	public String getKeyword() {

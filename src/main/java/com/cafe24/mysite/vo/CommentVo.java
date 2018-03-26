@@ -1,5 +1,8 @@
 package com.cafe24.mysite.vo;
 
+import org.apache.ibatis.type.Alias;
+
+@Alias("commentvo")
 public class CommentVo {
 
 	private Long no;

@@ -1,5 +1,8 @@
 package com.cafe24.mysite.vo;
 
+import org.apache.ibatis.type.Alias;
+
+@Alias("uservo")
 public class UserVo {
 
 	private Long no;

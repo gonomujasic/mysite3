@@ -2,6 +2,8 @@ package com.cafe24.mysite.vo;
 
 import java.util.List;
 
+import org.apache.ibatis.type.Alias;
+@Alias("pagerandboardlist")
 public class PagerAndBoardList {
 
 	private Pager pager;

@@ -90,7 +90,7 @@ public class BoardController {
 		
 		UserVo authUser = (UserVo)request.getSession().getAttribute("authUser");
 		Long userNo = authUser.getNo();
-		System.out.println(no+":"+password+":"+userNo);
+		
 		boolean result = service.delete(no, password, userNo);
 		
 		return "redirect:/board/list";

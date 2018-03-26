@@ -9,26 +9,45 @@
 	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
 
 	<!-- validator, conversionService, messageConverter를 자동으로 등록 -->
-	<mvc:annotation-driven/>
+	<mvc:annotation-driven>
+		<!-- 메시지 컨버터 -->
+		<mvc:message-converters>
+			<bean class="org.springframework.http.converter.StringHttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>text/html; charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+			<bean
+				class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+				<property name="supportedMediaTypes">
+					<list>
+						<value>application/json; charset=UTF-8</value>
+					</list>
+				</property>
+			</bean>
+		</mvc:message-converters>
+	</mvc:annotation-driven>
 
 	<!-- 서블릿 컨테이너의 디폴트 서블릿 위임 핸들러 -->
-	<mvc:default-servlet-handler/>
+	<mvc:default-servlet-handler />
 
 	<!-- 뷰 리졸버 설정 : 이런 식으로 셋팅 안 해주면 mvc에서 기본 설정으로 해줌. -->
 	<bean id="viewResolver"
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-		<property name="viewClass" value="org.springframework.web.servlet.view.JstlView" />
+		<property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
 		<property name="prefix" value="/WEB-INF/views/" />
 		<property name="suffix" value=".jsp" />
 		<property name="order" value="1" />
 	</bean>
 
 
-	<!-- 빈 설정을 annotation 기반으로 하겠다. -->
-	<context:annotation-config />
+	<!-- 빈 설정을 annotation 기반으로 하겠다. 없어도 됨. component-scan이 기능을 함축하고 있음 -->
+	<!-- <context:annotation-config /> -->
 
 	<!-- 스캐닝 할 기준 패키지 -->
-	<context:component-scan base-package="com.cafe24.mysite.controller" />
-
+	<context:component-scan base-package="com.cafe24.mysite.controller " />
 
 </beans>

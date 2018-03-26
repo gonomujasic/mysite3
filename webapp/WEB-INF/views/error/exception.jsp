@@ -8,6 +8,5 @@
 </head>
 <body>
 ㅈㅅㅈㅅ
-<p style="color:#ff0000">${error }</p>
 </body>
 </html>

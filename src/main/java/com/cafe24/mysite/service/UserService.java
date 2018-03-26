@@ -11,13 +11,17 @@ public class UserService {
 
 	@Autowired
 	private UserDao userDao;
-	
+
 	public boolean join(UserVo vo) {
 		return userDao.insert(vo);
 	}
 
-	public UserVo getUser(String email, String password) {
-		return userDao.get(email, password);
+	public UserVo getUser(UserVo vo) {
+		return userDao.get(vo);
 	}
-	
+
+	public UserVo getByEmail(String email) {
+		return userDao.get(email);
+	}
+
 }

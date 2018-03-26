@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="board">
+
+	<sql id="keyword">
+	AND (TITLE LIKE '%${keyword}%' OR CONTENT LIKE '%${keyword}%') 
+	</sql>
+	
+	<select id="getList" parameterType="pager" resultType="boardvo">
+	<![CDATA[
+	SELECT B.NO, 
+			B.TITLE, 
+			B.CONTENT, 
+			DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %h:%m:%s') AS regDate, 
+			B.GROUP_NO AS groupNo, 
+			B.ORDER_NO AS orderNo, 
+			B.DEPTH, 
+			U.NAME AS userName, 
+			B.HIT 
+		FROM BOARD B, USER U 
+		WHERE B.USER_NO = U.NO
+		]]>	
+		<if test="keyword != null and keyword != ''">
+			<include refid="keyword"/>
+		</if>
+		<![CDATA[
+		ORDER BY B.GROUP_NO DESC, 
+					ORDER_NO ASC 
+		LIMIT #{pageNo}, #{ARTICLE_COUNT_PER_PAGE}
+	]]>	
+	</select>
+
+	<select id="getTotalNo" resultType="integer" parameterType="pager">
+		<![CDATA[
+		SELECT COUNT(*) 
+			FROM BOARD 
+			WHERE 1 = 1
+		]]>
+		<if test="keyword != null">
+			<include refid="keyword"></include>
+		</if>
+	</select>
+
+	<insert id="insert" parameterType="boardvo">
+		<![CDATA[
+			INSERT INTO BOARD 
+			VALUES (NULL, 
+			#{title}, 
+			#{content}, 
+			NOW(), 
+			0, 
+			(SELECT IFNULL(MAX(GROUP_NO),0) FROM BOARD A)+1 , 
+			1, 
+			0, 
+			#{userNo})
+		]]>
+	</insert>
+	
+	<update id="update" parameterType="boardvo">
+		<![CDATA[
+			UPDATE BOARD
+				SET TITLE = #{title},
+					CONTENT = #{content}
+				WHERE NO = #{no}	
+		]]>
+	</update>
+	
+	<delete id="delete">
+		<![CDATA[
+			DELETE FROM BOARD
+				WHERE NO = #{no}
+		]]>
+	</delete>
+	
+	<select id="checkPW" parameterType="map" resultType="integer">
+		SELECT COUNT(*) 
+			FROM USER
+			WHERE NO = #{userNo}
+			AND PASSWORD = PASSWORD(#{password})
+	</select>
+
+	<select id="view" parameterType="long" resultType="boardvo">
+		SELECT B.NO, 
+				B.TITLE, 
+				B.CONTENT, 
+				DATE_FORMAT(B.REG_DATE, '%Y-%m-%d %h:%m:%s') AS regDate, 
+				B.GROUP_NO AS groupNo, 
+				B.ORDER_NO AS orderNo, 
+				B.DEPTH, 
+				U.NAME AS userName, 
+				U.NO 
+			FROM BOARD B, USER U 
+			WHERE B.USER_NO = U.NO 
+			AND B.NO = #{no}
+	</select>
+
+	<update id="readCount" parameterType="long">
+		UPDATE BOARD 
+			SET HIT = HIT + 1 
+			WHERE NO = #{no}
+	</update>
+	
+	<select id="cList" parameterType="long" resultType="commentvo">
+		SELECT C.NO, 
+				C.CONTENT, 
+				DATE_FORMAT(C.REG_DATE, '%Y-%m-%d %h:%m:%s') AS regDate, 
+				U.NAME AS userName
+			FROM BOARD B, USER U, COMMENT C 
+			WHERE C.USER_NO = U.NO 
+			AND C.BOARD_NO = B.NO 
+			AND C.BOARD_NO = #{no}
+			
+	</select>
+	
+	<select id="groupNo" parameterType="long" resultType="long">
+		SELECT GROUP_NO 
+				FROM BOARD 
+				WHERE NO = #{no}
+	</select>
+	
+	<select id="beforeReply" parameterType="boardvo">
+		UPDATE BOARD A, (SELECT ORDER_NO FROM BOARD WHERE NO = #{no}) B 
+				SET A.ORDER_NO = A.ORDER_NO + 1 
+				WHERE A.ORDER_NO > B.ORDER_NO AND A.GROUP_NO = #{groupNo};
+	</select>
+	
+	<select id="reply" parameterType="boardvo">
+			INSERT INTO BOARD 
+				VALUES (NULL, 
+						#{title}, 
+						#{content}, 
+						NOW(), 
+						0, 
+						#{groupNo}, 
+						(SELECT ORDER_NO FROM BOARD A WHERE NO = #{no})+1, 
+						(SELECT A.DEPTH FROM BOARD A WHERE NO = #{no})+1, 
+						#{userNo})
+	</select>
+	
+	<insert id="cInsert" parameterType="commentvo">
+		INSERT INTO COMMENT 
+			VALUES (NULL, 
+					#{content}, 
+					NOW(), 
+					#{boardNo}, 
+					#{userNo})
+	</insert>
+	
+	<delete id="cDelete" parameterType="map">
+		DELETE FROM COMMENT 
+			WHERE NO = #{no} 
+			AND BOARD_NO = #{bno}
+	</delete>
+</mapper>

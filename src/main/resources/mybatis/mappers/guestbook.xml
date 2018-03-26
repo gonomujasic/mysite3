@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="guestbook">
+
+	<insert id="insert" parameterType="guestbookvo">
+	<![CDATA[
+		INSERT INTO GUESTBOOK 
+			VALUES(NULL, 
+			#{name}, 
+			PASSWORD(#{password}), 
+			#{content}, 
+			now())
+	]]>
+		<!-- 입력 후 입력한 후에 no를 vo에 다시 추가 시켜줌. -->
+		<selectKey keyProperty="no" resultType="long" order="AFTER">
+		<![CDATA[
+			SELECT LAST_INSERT_ID()
+		]]>
+		</selectKey>
+	</insert>
+
+	<select id="getList" resultType="guestbookvo">
+		<![CDATA[
+		SELECT NO, 
+				NAME, 
+				PASSWORD, 
+				CONTENT, 
+				DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS regDate
+			FROM GUESTBOOK 
+			ORDER BY NO DESC 
+		]]>
+	</select>
+
+	<delete id="delete" parameterType="guestbookvo">
+		<![CDATA[
+			DELETE FROM GUESTBOOK WHERE NO = #{no} AND PASSWORD= PASSWORD(#{password})
+		]]>
+	</delete>
+</mapper>

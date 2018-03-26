@@ -36,11 +36,17 @@ public class BoardService {
 		} else {
 			pager.setPage(1);
 		}
-		if(kwd != null) {
+		if(kwd != null && kwd != "") {
 			pager.setKeyword(kwd);
 		}
+		pager.setPageNo((pager.getPage()-1)*10);
 		
 		PagerAndBoardList pabl= dao.getList(pager);
+		
+		Integer totalNo = dao.getTotalNo(pager);
+		
+		pabl.getPager().setTotalNo(totalNo);
+		pabl.getPager().setConfig();
 		
 		return pabl;
 	}
@@ -54,11 +60,22 @@ public class BoardService {
 	}
 
 	public BoardVo view(Long no) {
-		return dao.view(no);
+		BoardVo vo = dao.view(no);
+		List<CommentVo> cList = dao.getcList(no);
+		vo.setcList(cList);
+		
+		if(vo != null)
+			dao.readCount(no);
+		
+		return vo;
 	}
 
 	public boolean delete(Long no, String password, Long userNo) {
-		return dao.delete(no, password, userNo);
+		if(dao.checkPW(userNo, password)) {
+			return dao.delete(no);
+		}
+		
+		return false;
 	}
 
 	public boolean cInsert(CommentVo cVo) {
@@ -70,6 +87,8 @@ public class BoardService {
 	}
 
 	public boolean reply(BoardVo vo) {
+		Long groupNo = dao.getGroupNo(vo.getNo());
+		vo.setGroupNo(groupNo);
 		return dao.reply(vo);
 	}
 

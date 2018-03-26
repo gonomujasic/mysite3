@@ -27,7 +27,7 @@ public class UserController {
 	@RequestMapping(value="/join", method=RequestMethod.POST)
 	public String join(@ModelAttribute UserVo vo) {
 		userService.join(vo);
-		return "user/join";
+		return "redirect:/main";
 	}
 	
 	@RequestMapping(value="/joinsuccess", method=RequestMethod.GET)
@@ -44,7 +44,7 @@ public class UserController {
 	public String login(HttpSession session,
 			@ModelAttribute UserVo vo, 
 			Model model) {
-		UserVo authUser = userService.getUser(vo.getEmail(), vo.getPassword());
+		UserVo authUser = userService.getUser(vo);
 		if(authUser == null) {
 			model.addAttribute("result", "fail");
 			return "user/login";
