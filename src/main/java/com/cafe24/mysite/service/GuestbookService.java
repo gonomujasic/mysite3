@@ -12,17 +12,36 @@ import com.cafe24.mysite.vo.GuestbookVo;
 public class GuestbookService {
 
 	@Autowired
-	GuestbookDao dao;
-	
-	public List<GuestbookVo> list() {
-		return dao.getList();
+	private GuestbookDao guestbookDao;
+
+	public List<GuestbookVo> getMessageList(Long no){
+		List<GuestbookVo> list = guestbookDao.getList(no);
+		return list;
 	}
 	
-	public boolean add(GuestbookVo vo) {
-		return dao.insert(vo);
+	public List<GuestbookVo> getMessageList(){
+		List<GuestbookVo> list = guestbookDao.getList();
+		return list;
 	}
 	
-	public boolean delete(GuestbookVo vo)	{
-		return dao.delete(vo);
+	public boolean insertMessage( GuestbookVo guestbookVo ) {
+		int count = guestbookDao.insert(guestbookVo);
+		return count == 1;
+	}
+	
+	public GuestbookVo insertMessage2( GuestbookVo guestbookVo ) {
+		GuestbookVo vo = null;
+		
+		int count = guestbookDao.insert(guestbookVo);
+		if( count == 1 ) {
+			vo = guestbookDao.get( guestbookVo.getNo() );
+		}
+		
+		return vo;
+	}	
+	
+	public boolean deleteMessage( GuestbookVo guestbookVo ) {
+		int count = guestbookDao.delete(guestbookVo);
+		return count == 1;
 	}
 }

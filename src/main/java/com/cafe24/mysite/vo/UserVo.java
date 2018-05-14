@@ -1,14 +1,29 @@
 package com.cafe24.mysite.vo;
 
+import javax.validation.constraints.Pattern;
+
 import org.apache.ibatis.type.Alias;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
+import org.hibernate.validator.constraints.NotEmpty;
 
 @Alias("uservo")
 public class UserVo {
 
 	private Long no;
+	
+	@NotEmpty
+	@Length(min=2, max=5)
 	private String name;
+	
+	@Email
+	@NotEmpty
+	//@Pattern(regexp="")
 	private String email;
+	@NotEmpty
+	@Pattern(regexp="^[0-9a-zA-Z]{4,12}$")
 	private String password;
+	@Pattern(regexp="^(female|male)$")
 	private String gender;
 	private String joinDate;
 

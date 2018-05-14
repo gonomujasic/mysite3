@@ -38,14 +38,14 @@
 	<update id="update" parameterType="uservo">
 	<![CDATA[
 	UPDATE USER 
-		SET NAME = ${name},  
+		SET NAME = #{name},  
 		]]>   
 		<if test='password != ""'>
-		PASSWORD = PASSWORD(${password}),  
+		PASSWORD = PASSWORD(#{password}),  
 		</if>   
 		<![CDATA[
-		GENDER = ${gender} 
-		WHERE NO = ${no} 
+		GENDER = #{gender} 
+		WHERE NO = #{no} 
 	]]>
 	</update>
 

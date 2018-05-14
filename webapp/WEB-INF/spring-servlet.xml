@@ -28,7 +28,32 @@
 				</property>
 			</bean>
 		</mvc:message-converters>
+		<!-- argument resolver -->
+		<mvc:argument-resolvers>
+			<bean class="com.cafe24.security.AuthUserHandlerMethodArgumentResolver" />
+		</mvc:argument-resolvers>
+
 	</mvc:annotation-driven>
+
+	<!-- Interceptors -->
+	<mvc:interceptors>
+		<mvc:interceptor>
+			<mvc:mapping path="/user/auth" />
+			<bean class="com.cafe24.security.AuthLoginInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/user/logout" />
+			<bean class="com.cafe24.security.AuthLogoutInterceptor" />
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/**" />
+			<mvc:exclude-mapping path="/user/auth" />
+			<mvc:exclude-mapping path="/user/logout" />
+			<mvc:exclude-mapping path="/assets/*" />
+			<bean class="com.cafe24.security.AuthInterceptor" />
+		</mvc:interceptor>
+	</mvc:interceptors>
+
 
 	<!-- 서블릿 컨테이너의 디폴트 서블릿 위임 핸들러 -->
 	<mvc:default-servlet-handler />
@@ -49,5 +74,14 @@
 
 	<!-- 스캐닝 할 기준 패키지 -->
 	<context:component-scan base-package="com.cafe24.mysite.controller " />
+	<!-- 6. MessageSource -->
+	<bean id="messageSource"
+		class="org.springframework.context.support.ResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>messages/messages_ko</value>
+			</list>
+		</property>
+	</bean>
 
 </beans>

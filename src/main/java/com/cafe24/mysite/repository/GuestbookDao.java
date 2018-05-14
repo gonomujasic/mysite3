@@ -19,28 +19,30 @@ import com.cafe24.mysite.vo.GuestbookVo;
 public class GuestbookDao {
 	
 	@Autowired
-	DataSource dataSource;
+	private SqlSession sqlSession;
 	
-	@Autowired
-	SqlSession sqlSession;
+	public GuestbookVo get( Long no ) {
+		return sqlSession.selectOne( "guestbook.getByNo", no );
+	}
 	
-	public boolean insert( GuestbookVo vo) {
-			System.out.println(vo);
-			int count = sqlSession.insert("guestbook.insert", vo);
-			boolean result = count == 1;
-			System.out.println( vo );
-			return result;
+	public int delete( GuestbookVo vo ) {
+		int count = sqlSession.delete("guestbook.delete", vo);
+		return count;		
+	}
+	
+	public int insert(GuestbookVo vo) {
+		int count = sqlSession.insert( "guestbook.insert", vo );
+		return count;
 	}
 
 	public List<GuestbookVo> getList() {
-		return sqlSession.selectList("guestbook.getList");
+		List<GuestbookVo> list = sqlSession.selectList("guestbook.getList");
+		return list;
 	}
-
-	public boolean delete(GuestbookVo vo) {
-		int count = sqlSession.delete("guestbook.delete", vo);
-		boolean result = count == 1;
-		
-		return result;
+	
+	public List<GuestbookVo> getList(Long no) {
+		List<GuestbookVo> list = sqlSession.selectList("guestbook.getList2", no);
+		return list;
 	}
 	
 }

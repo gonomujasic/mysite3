@@ -33,7 +33,7 @@ public class BoardDao {
 	public PagerAndBoardList getList(Pager pager) {
 		
 		PagerAndBoardList pabl = new PagerAndBoardList();
-		List<BoardVo> list = sqlSession.selectList("dboard.getList", pager);
+		List<BoardVo> list = sqlSession.selectList("board.getList", pager);
 		pabl.setList(list);
 		pabl.setPager(pager);
 		

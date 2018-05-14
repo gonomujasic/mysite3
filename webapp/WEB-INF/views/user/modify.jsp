@@ -14,7 +14,7 @@
 	<c:import url="/WEB-INF/views/includes/header.jsp"/>
 		<div id="content">
 			<div id="user">
-				<form id="update-form" name="updateform" method="post" action="${pageContext.servletContext.contextPath }/user">
+				<form id="update-form" name="updateform" method="post" action="${pageContext.servletContext.contextPath }/user/modify">
 					<input type="hidden" name="a" value="modify">
 					<input type="hidden" name="no" value="${vo.no }">
 					<label class="block-label" for="name">이름</label>

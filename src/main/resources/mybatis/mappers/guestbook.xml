@@ -3,38 +3,72 @@
 
 <mapper namespace="guestbook">
 
-	<insert id="insert" parameterType="guestbookvo">
-	<![CDATA[
-		INSERT INTO GUESTBOOK 
-			VALUES(NULL, 
-			#{name}, 
-			PASSWORD(#{password}), 
-			#{content}, 
-			now())
-	]]>
-		<!-- 입력 후 입력한 후에 no를 vo에 다시 추가 시켜줌. -->
-		<selectKey keyProperty="no" resultType="long" order="AFTER">
+	<select id="getList2" parameterType="long" resultType="guestbookvo">
 		<![CDATA[
-			SELECT LAST_INSERT_ID()
-		]]>
-		</selectKey>
-	</insert>
-
+		  select no, 
+			     name, 
+		         content, 
+			     date_format(reg_date, '%Y-%m-%d %h:%i:%s') as regDate 
+		    from guestbook
+		]]>		
+		<if test="_parameter > 0">
+			<![CDATA[
+		    where no < #{_parameter } 	
+			]]>		
+		</if>    
+		<![CDATA[
+	    order by reg_date desc
+	       limit 0, 5
+		]]>		
+	</select>
+	
 	<select id="getList" resultType="guestbookvo">
 		<![CDATA[
-		SELECT NO, 
-				NAME, 
-				PASSWORD, 
-				CONTENT, 
-				DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS regDate
-			FROM GUESTBOOK 
-			ORDER BY NO DESC 
-		]]>
+		  select no, 
+			     name, 
+		         content, 
+			     date_format(reg_date, '%Y-%m-%d %h:%i:%s') as regDate 
+		    from guestbook
+	    order by reg_date desc
+		]]>		
 	</select>
-
+	
+	<select id="getByNo" parameterType="long" resultType="guestbookvo">
+		<![CDATA[
+		  select no, 
+			     name, 
+		         content, 
+			     date_format(reg_date, '%Y-%m-%d %h:%i:%s') as regDate 
+		    from guestbook
+		   where no = #{no }
+		]]>		
+	</select>	
+	
 	<delete id="delete" parameterType="guestbookvo">
 		<![CDATA[
-			DELETE FROM GUESTBOOK WHERE NO = #{no} AND PASSWORD= PASSWORD(#{password})
-		]]>
+		delete
+		  from guestbook 
+		 where no=#{no }
+		   and password=#{password }
+		]]>	
 	</delete>
+	
+	
+	
+	<insert id="insert" parameterType="guestbookvo">
+		<![CDATA[
+		insert 
+		  into guestbook 
+		values ( null, 
+		         #{name },
+		         #{password },
+		         #{content },
+		         now() )		
+		]]>
+		<selectKey keyProperty="no" resultType="long" order="AFTER">
+			<![CDATA[
+			select last_insert_id()	
+			]]>
+		</selectKey>
+	</insert>
 </mapper>

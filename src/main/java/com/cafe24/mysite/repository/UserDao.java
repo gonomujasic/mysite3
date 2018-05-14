@@ -40,6 +40,7 @@ public class UserDao {
 		return result;
 		
 	}
+	
 	public UserVo get(Long no) {
 		
 		UserVo result = sqlSession.selectOne("user.getByNo", no);
@@ -47,9 +48,10 @@ public class UserDao {
 		return result;
 		
 	}
+	
 	public UserVo get(String email) {
 		
-		UserVo result = sqlSession.selectOne("duser.getByEmail", email);
+		UserVo result = sqlSession.selectOne("user.getByEmail", email);
 		
 		return result;
 		

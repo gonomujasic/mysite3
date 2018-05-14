@@ -7,7 +7,6 @@
 			<h1><a href="${pageContext.servletContext.contextPath }/main">MySite</a></h1>
 			<ul>
 			<c:if test="${authUser eq null }">
-			
 				<li><a href="${pageContext.servletContext.contextPath }/user/login">로그인</a></li>
 				<li><a href="${pageContext.servletContext.contextPath }/user/join">회원가입</a></li>
 			</c:if>	
